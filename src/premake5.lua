@@ -340,7 +340,7 @@ solution('mod_tools')
 
 			if ZAPPS then
 				dependson { "zapps-strip-interp" }
-				linkoptions { "-Wl,-rpath=XORIGIN/libs", "-Wl,-e_zapps_start", "-Wl,--unique=.text.zapps" }
+				linkoptions { "-Wl,-rpath=XORIGIN/libs", "-Wl,--disable-new-dtags", "-Wl,-e_zapps_start", "-Wl,--unique=.text.zapps" }
 				postbuildcommands { "$(SILENT) sed -i '0,/XORIGIN/{s/XORIGIN/$$ORIGIN/}' %[%{!cfg.linktarget.abspath}]" }
 				postbuildcommands { "$(SILENT) %[" .. catfile(props.outdir, "host", "zapps-strip-interp") .. "] %[%{!cfg.linktarget.abspath}]" }
 				postbuildcommands { "$(SILENT) {MKDIR} %[%{!cfg.linktarget.directory}/libs]" }
