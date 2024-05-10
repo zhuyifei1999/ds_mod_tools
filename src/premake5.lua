@@ -1,3 +1,4 @@
+local ZAPPS = true -- Linux-only
 local USE_PROPRIETARY = false
 
 os_properties = 
@@ -94,11 +95,7 @@ local definesMacros = (function()
 		local ret = tostring(name)
 		if value then
 			if type(value) == "string" then
-				if _ACTION == "vs2010" then
-					ret = ret..('="%s"'):format(value)
-				else
-					ret = ret..('=\\"%s\\"'):format(value)
-				end
+				ret = ret..('="%s"'):format(value)
 			else
 				ret = ret..'='..tostring(value)
 			end
@@ -287,10 +284,16 @@ libs =
 	util = { include_lib = false },
 }
 
+if ZAPPS then
+	libs.zappslib = { include_lib = false }
+end
+
 solution('mod_tools')
 	configurations { "debug", "release" }
 	location ( catfile(props.outdir, "proj") )
-	flags { "Symbols", "NoRTTI", "NoEditAndContinue", "NoPCH" }
+	flags { "NoPCH" }
+	symbols "On"
+	editandcontinue "Off"
 	includedirs { "lib", catfile("..", "lib"), "external" }
   	targetdir ( props.skuoutdir )
 
@@ -299,20 +302,32 @@ solution('mod_tools')
 		definesMacros { DS_MOD_TOOLS_USE_PROPRIETARY = "1" }
 	end
 
-    configuration { "debug" }
-        definesMacros { "DEBUG", "_CRT_SECURE_NO_WARNINGS" }
-   	configuration { "release" }
-        definesMacros { "RELEASE", "_CRT_SECURE_NO_WARNINGS" }
-        flags { "Optimize" }	
+	configuration { "debug" }
+		definesMacros { "DEBUG", "_CRT_SECURE_NO_WARNINGS" }
+	configuration { "release" }
+		definesMacros { "RELEASE", "_CRT_SECURE_NO_WARNINGS" }
+		optimize "On"
+
+	if ZAPPS then
+		project("zapps-strip-interp")
+			kind "ConsoleApp"
+			language "C"
+			files { "lib/zappslib/strip-interp.c" }
+			targetdir( catfile(props.outdir, "host") )
+
+		project "zapps-libs-clean"
+			kind "Makefile"
+			cleancommands { "$(SILENT) {RMDIR} %[%{!cfg.buildtarget.directory}/libs]" }
+	end
 
 	for k, app in pairs(apps) do	
 	   	project(app)
 			kind "ConsoleApp"
 			language "C++"   	   
-	      	files { "app/"..app.."/**.h", "app/"..app.."/**.hpp", "app/"..app.."/**.cpp" }	 
-	      	for lib, settings in pairs(libs) do
-	      		links{ lib }
-	      	end
+			files { "app/"..app.."/**.h", "app/"..app.."/**.hpp", "app/"..app.."/**.cpp" }
+			for lib, settings in pairs(libs) do
+				links{ lib }
+			end
 			if app == "textureconverter" then
 				libdirs { "external/freeimage/Dist", "external/squish" }
 				links{ "freeimage", "squish" }
@@ -322,16 +337,33 @@ solution('mod_tools')
 					links{ "TextureConverter", "PVRTexLib" }
 				end
 			end
+
+			if ZAPPS then
+				dependson { "zapps-strip-interp" }
+				linkoptions { "-Wl,-rpath=XORIGIN/libs", "-Wl,-e_zapps_start", "-Wl,--unique=.text.zapps" }
+				postbuildcommands { "$(SILENT) sed -i '0,/XORIGIN/{s/XORIGIN/$$ORIGIN/}' %[%{!cfg.linktarget.abspath}]" }
+				postbuildcommands { "$(SILENT) %[" .. catfile(props.outdir, "host", "zapps-strip-interp") .. "] %[%{!cfg.linktarget.abspath}]" }
+				postbuildcommands { "$(SILENT) {MKDIR} %[%{!cfg.linktarget.directory}/libs]" }
+				postbuildcommands { "$(SILENT) cp --no-clobber $$($(CC) --print-file-name=ld-linux-x86-64.so.2) %[%{!cfg.linktarget.directory}/libs]" }
+				postbuildcommands { "$(SILENT) for FILE in $$(objdump -p %[%{!cfg.linktarget.abspath}] | grep NEEDED | awk '{ print $$2 }'); do cp --no-clobber $$($(CC) --print-file-name=$$FILE) %[%{!cfg.linktarget.directory}/libs]; done" }
+			end
 	end
 
 	for lib, settings in pairs(libs) do	
 	   	project(lib)
 			kind "StaticLib"
-			language "C++"   	   
-	      	files { "lib/"..lib.."/**.h", "lib/"..lib.."/**.hpp", "lib/"..lib.."/**.cpp" }
-	      	if settings.include_lib then
-	      		includedirs { "lib/"..lib }
-	      	end
+
+			if lib ~= "zappslib" then
+				language "C++"
+				files { "lib/"..lib.."/**.h", "lib/"..lib.."/**.hpp", "lib/"..lib.."/**.cpp" }
+				if settings.include_lib then
+					includedirs { "lib/"..lib }
+				end
+			else
+				language "C"
+				files { "lib/zappslib/zapps-crt0.c" }
+				buildoptions { "-fPIC", "-ffreestanding", "-fno-merge-constants" }
+			end
 	end
 
 
