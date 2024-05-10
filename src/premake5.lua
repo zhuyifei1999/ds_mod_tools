@@ -344,8 +344,8 @@ solution('mod_tools')
 				postbuildcommands { "$(SILENT) sed -i '0,/XORIGIN/{s/XORIGIN/$$ORIGIN/}' %[%{!cfg.linktarget.abspath}]" }
 				postbuildcommands { "$(SILENT) %[" .. catfile(props.outdir, "host", "zapps-strip-interp") .. "] %[%{!cfg.linktarget.abspath}]" }
 				postbuildcommands { "$(SILENT) {MKDIR} %[%{!cfg.linktarget.directory}/libs]" }
-				postbuildcommands { "$(SILENT) cp --no-clobber $$($(CC) --print-file-name=ld-linux-x86-64.so.2) %[%{!cfg.linktarget.directory}/libs]" }
-				postbuildcommands { "$(SILENT) for FILE in $$(objdump -p %[%{!cfg.linktarget.abspath}] | grep NEEDED | awk '{ print $$2 }'); do cp --no-clobber $$($(CC) --print-file-name=$$FILE) %[%{!cfg.linktarget.directory}/libs]; done" }
+				postbuildcommands { "$(SILENT) cp --update=none $$($(CC) --print-file-name=ld-linux-x86-64.so.2) %[%{!cfg.linktarget.directory}/libs]" }
+				postbuildcommands { "$(SILENT) for FILE in $$(ldd %[%{!cfg.linktarget.abspath}] | grep '=>' | awk '{ print $$1 }'); do cp --update=none $$($(CC) --print-file-name=$$FILE) %[%{!cfg.linktarget.directory}/libs]; done" }
 			end
 	end
 
