@@ -352,6 +352,7 @@ solution('mod_tools')
 	for lib, settings in pairs(libs) do	
 	   	project(lib)
 			kind "StaticLib"
+			targetdir( catfile(props.outdir, "libs") )
 
 			if lib ~= "zappslib" then
 				language "C++"
