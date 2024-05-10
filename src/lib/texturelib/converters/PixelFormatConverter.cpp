@@ -5,10 +5,12 @@
 #include "ToolTexture.h"
 #include <systemlib/platform.h>
 
-#include <PVRTextureUtilities.h>
-#include <PVRTDecompress.h>
-#include <squish.h>
-#include <TextureConverter.h>
+#include <pvrt/PVRTextureUtilities.h>
+#include <pvrt/PVRTDecompress.h>
+#include <squish/squish.h>
+#include <atit/TextureConverter.h>
+
+#include <cstring>
 
 namespace PixelFormatConverter
 {
@@ -254,7 +256,7 @@ char *ConvertToATITC(PixelFormat::Type pixel_format, const InputImage &image, ui
 
 	q_src.nWidth = image.Width();
 	q_src.nHeight = image.Height();
-	q_src.nFormat = (image.BPP() == 32) ? Q_FORMAT_RGBA_8888 : Q_FORMAT_RGB_888;
+	q_src.nFormat = (image.BPP() == 32) ? Q_FORMAT_RGBA_8UI : Q_FORMAT_RGB_8UI;
 	q_src.nDataSize = image.Width() * image.Height() * image.BPP() / 8;
 	q_src.pData = reinterpret_cast<unsigned char *>(image.RawData());
 
@@ -300,7 +302,7 @@ char* ATITCtoARGB( PixelFormat::Type pixel_format, uint32_t width, uint32_t heig
 
 	q_dst.nWidth = width;
 	q_dst.nHeight = height;
-	q_dst.nFormat = Q_FORMAT_RGBA_8888;
+	q_dst.nFormat = Q_FORMAT_RGBA_8UI;
 
 	// first call calculates output data size
 	unsigned int ret = Qonvert(&q_src, &q_dst);

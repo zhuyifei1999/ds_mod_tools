@@ -1,14 +1,14 @@
 #include "pch.h"
 
 #include "Helper.h"
-#include <InputImage.h>
+#include <texturelib/InputImage.h>
 
 #include <tclap/CmdLine.h>
 
-#include "Converters/TextureOpenGL.h"
-#include "Converters/TexturePS4.h"
-//#include "Converters/TexturePS3.h"
-//#include "Converters/Texture360.h"
+#include <texturelib/converters/TextureOpenGL.h>
+#include <texturelib/converters/TexturePS4.h>
+//#include <texturelib/converters/TexturePS3.h>
+//#include <texturelib/converters/Texture360.h>
 
 #include <util/BinaryBufferIO.h>
 
@@ -268,9 +268,9 @@ int main( int argc, char* argv[] )
 
 		std::string input_filenames_value = input_filenames_arg.getValue();
 		size_t semicolon_pos = input_filenames_value.find( ';' );
-		
+
 		StringVec input_filenames;
-		
+
 		while( semicolon_pos != std::string::npos )
 		{
 			std::string filename = input_filenames_value.substr( 0, semicolon_pos );

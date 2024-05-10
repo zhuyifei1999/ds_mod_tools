@@ -1,6 +1,6 @@
 #pragma once
 
-#include <FreeImage.h>
+#include <freeimage/Dist/FreeImage.h>
 
 #include <renderlib/texture_enums.h>
 

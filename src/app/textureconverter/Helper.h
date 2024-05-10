@@ -6,7 +6,7 @@
 #include <systemlib/platform.h>
 #include <renderlib/texture_enums.h>
 #include <systemlib/klei_endian.h>
-#include <FreeImage.h>
+#include <freeimage/Dist/FreeImage.h>
 
 #include "ResizeMethod.h"
 

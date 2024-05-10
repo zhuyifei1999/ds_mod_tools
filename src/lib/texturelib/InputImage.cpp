@@ -54,7 +54,18 @@ uint32_t InputImage::BPP() const
 
 void* InputImage::RawData() const
 {
+#if FREEIMAGE_COLORORDER != FREEIMAGE_COLORORDER_RGB
+	// FIXME: This leaks memory, but I don't want to worry about it rn
+	FIBITMAP* newbitmap = FreeImage_Clone( mDIB );
+	if( !newbitmap ) throw;
+
+	extern BOOL SwapRedBlue32(FIBITMAP* dib);
+	if( !SwapRedBlue32( newbitmap ) ) throw;
+
+	return FreeImage_GetBits( newbitmap );
+#else
 	return FreeImage_GetBits( mDIB );
+#endif
 }
 
 InputImage* InputImage::ConvertTo32Bit() const

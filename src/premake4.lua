@@ -244,7 +244,7 @@ local copyDirTree = (function()
 	local cmd_template
 
 	if hostIsUnix() then
-		cmd_template = "cp -r %q %q"
+		cmd_template = "cp -Tr %q %q"
 	else
 		cmd_template = 'xcopy /e /y "%s" "%s"'
 	end
@@ -274,20 +274,22 @@ apps =
 	'scml', 
 	'png', 
 	'autocompiler', 
-	--'textureconverter'
+	'textureconverter'
 }
 
 libs = 
 {
-	--texturelib = { include_lib = true },
+	texturelib = { include_lib = true },
 	modtoollib = { include_lib = false },
+	renderlib = { include_lib = true },
+	util = { include_lib = false },
 }
 
 solution('mod_tools')
 	configurations { "debug", "release" }
 	location ( catfile(props.outdir, "proj") )
-	flags { "Symbols", "NoRTTI", "NoEditAndContinue", "NoExceptions", "NoPCH" }
-	includedirs { "lib", catfile("..", "lib") }
+	flags { "Symbols", "NoRTTI", "NoEditAndContinue", "NoPCH" }
+	includedirs { "lib", catfile("..", "lib"), "external" }
   	targetdir ( props.skuoutdir )
 
 	definesMacros { PYTHONDIR = props.pythondir }
@@ -306,6 +308,10 @@ solution('mod_tools')
 	      	for lib, settings in pairs(libs) do
 	      		links{ lib }
 	      	end
+			if app == "textureconverter" then
+				libdirs { "external/freeimage/Dist", "external/squish", "external/atit", "external/pvrt" }
+				links{ "freeimage", "squish", "TextureConverter", "PVRTexLib" }
+			end
 	end
 
 	for lib, settings in pairs(libs) do	

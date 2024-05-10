@@ -4,6 +4,7 @@ class ToolTexture;
 
 #include <renderlib/texture_enums.h>
 #include <systemlib/platform.h>
+#include <cstdint>
 
 namespace PixelFormatConverter
 {

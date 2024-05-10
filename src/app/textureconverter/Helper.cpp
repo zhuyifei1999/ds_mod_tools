@@ -1,7 +1,6 @@
 #include "pch.h"
 
 #include "Helper.h"
-#include <FreeImage.h>
 #include <util/util.h>
 
 

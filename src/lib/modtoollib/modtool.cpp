@@ -364,7 +364,7 @@ char const* get_python() {
 			error("Unable to find python!");
 		}
 #else
-		const char *possibilities[] = {"python2.7", "python2"};
+		const char *possibilities[] = {"python", "python3"};
 		for(size_t i = 0; i < sizeof(possibilities)/sizeof(possibilities[0]); i++) {
 			std::string attempt = std::string() + "which " + possibilities[i] + " &>/dev/null";
 			if(system(attempt.c_str()) == 0) {

@@ -10,11 +10,11 @@
 #endif
 
 
-#include "Converters/TextureOpenGL.h"
-//#include "Converters/Texture360.h"
-//#include "Converters/TexturePS3.h"
-#include "Converters/TexturePS4.h"
-#include "Converters/ToolTexture.h"
+#include <texturelib/converters/TextureOpenGL.h>
+//#include <texturelib/converters/Texture360.h>
+//#include <texturelib/converters/TexturePS3.h>
+#include <texturelib/converters/TexturePS4.h>
+#include <texturelib/converters/ToolTexture.h>
 
 #include <util/BinaryBufferIO.h>
 #include <systemlib/debug.h>
