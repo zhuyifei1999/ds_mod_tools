@@ -5,10 +5,12 @@
 #include "ToolTexture.h"
 #include <systemlib/platform.h>
 
+#include <squish/squish.h>
+#ifdef DS_MOD_TOOLS_USE_PROPRIETARY
 #include <pvrt/PVRTextureUtilities.h>
 #include <pvrt/PVRTDecompress.h>
-#include <squish/squish.h>
 #include <atit/TextureConverter.h>
+#endif
 
 #include <cstring>
 
@@ -226,6 +228,7 @@ char* ConvertToRGB8( const InputImage& image, uint32_t& data_size, ePlatform pla
 }
 
 
+#ifdef DS_MOD_TOOLS_USE_PROPRIETARY
 int GetATITCFormat( PixelFormat::Type pixel_format )
 {
 	int result = 0;
@@ -246,9 +249,14 @@ int GetATITCFormat( PixelFormat::Type pixel_format )
 
 	return result;
 }
+#endif
 
 char *ConvertToATITC(PixelFormat::Type pixel_format, const InputImage &image, uint32_t &data_size)
 {
+#ifndef DS_MOD_TOOLS_USE_PROPRIETARY
+	fprintf(stderr, "ATITC formats currently not supported\n");
+	throw;
+#else
 	TQonvertImage q_src;
 	memset(&q_src, 0, sizeof(TQonvertImage));
 	TQonvertImage q_dst;
@@ -284,10 +292,15 @@ char *ConvertToATITC(PixelFormat::Type pixel_format, const InputImage &image, ui
 	}
 
 	return result;
+#endif
 }
 
 char* ATITCtoARGB( PixelFormat::Type pixel_format, uint32_t width, uint32_t height, const void* data, const uint32_t data_size )
 {
+#ifndef DS_MOD_TOOLS_USE_PROPRIETARY
+	fprintf(stderr, "ATITC formats currently not supported\n");
+	throw;
+#else
 	TQonvertImage q_src;
 	memset(&q_src, 0, sizeof(TQonvertImage));
 
@@ -326,9 +339,11 @@ char* ATITCtoARGB( PixelFormat::Type pixel_format, uint32_t width, uint32_t heig
 	ConvertRGBAtoARGB( width, height, result );
 
 	return result;
+#endif
 }
 
 
+#ifdef DS_MOD_TOOLS_USE_PROPRIETARY
 using namespace pvrtexture;
 
 EPVRTPixelFormat GetPVRFormat( PixelFormat::Type pixel_format )
@@ -359,10 +374,14 @@ EPVRTPixelFormat GetPVRFormat( PixelFormat::Type pixel_format )
 
 	return pvr_format;
 }
-
+#endif
 
 char *ConvertToPVRTC(PixelFormat::Type pixel_format, const InputImage &image, uint32_t &data_size)
 {
+#ifndef DS_MOD_TOOLS_USE_PROPRIETARY
+	fprintf(stderr, "PVRTC formats currently not supported\n");
+	throw;
+#else
 	const InputImage* working_image = &image;
 
 	bool release_image = image.BPP() == 24;
@@ -392,10 +411,15 @@ char *ConvertToPVRTC(PixelFormat::Type pixel_format, const InputImage &image, ui
 
 
 	return result;
+#endif
 }
 
 char* PVRTCtoARGB( PixelFormat::Type pixel_format, uint32_t width, uint32_t height, const void* data )
 {
+#ifndef DS_MOD_TOOLS_USE_PROPRIETARY
+	fprintf(stderr, "PVRTC formats currently not supported\n");
+	throw;
+#else
 	int pvr2_bit = 0;
 
 	switch( pixel_format )
@@ -421,6 +445,7 @@ char* PVRTCtoARGB( PixelFormat::Type pixel_format, uint32_t width, uint32_t heig
 	ConvertRGBAtoARGB( width, height, result );
 
 	return result;
+#endif
 }
 
 char* Convert( PixelFormat::Type pixel_format, const InputImage& image, uint32_t& data_size, ePlatform platform )

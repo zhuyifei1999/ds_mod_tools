@@ -1,3 +1,5 @@
+local USE_PROPRIETARY = false
+
 os_properties = 
 {
 	windows = { dir = 'win32', pkg_dirs = {"cmn", "win32"}, pythondir = 'windows' },
@@ -293,6 +295,9 @@ solution('mod_tools')
   	targetdir ( props.skuoutdir )
 
 	definesMacros { PYTHONDIR = props.pythondir }
+	if USE_PROPRIETARY then
+		definesMacros { DS_MOD_TOOLS_USE_PROPRIETARY = "1" }
+	end
 
     configuration { "debug" }
         definesMacros { "DEBUG", "_CRT_SECURE_NO_WARNINGS" }
@@ -309,8 +314,13 @@ solution('mod_tools')
 	      		links{ lib }
 	      	end
 			if app == "textureconverter" then
-				libdirs { "external/freeimage/Dist", "external/squish", "external/atit", "external/pvrt" }
-				links{ "freeimage", "squish", "TextureConverter", "PVRTexLib" }
+				libdirs { "external/freeimage/Dist", "external/squish" }
+				links{ "freeimage", "squish" }
+
+				if USE_PROPRIETARY then
+					libdirs { "external/atit", "external/pvrt" }
+					links{ "TextureConverter", "PVRTexLib" }
+				end
 			end
 	end
 
