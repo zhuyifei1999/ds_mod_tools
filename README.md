@@ -1,6 +1,9 @@
 ds_mod_tools
 ============
 
+> This fork exists because I want to use Klei code instead of ktech, and I also
+> want to have redistributable binaries independent of the libc running on the OS.
+
 This is a fork from the source code for the 'Don't Starve Mod Tools' available on Steam Workshop.
 
 It is a port from the original mod tools for Linux and Mac. In also improves on the original animation (i.e., SCML) compiler in mod tools primarily
@@ -21,13 +24,27 @@ Runtime dependencies
 
 Under Windows, the tools have no runtime dependencies other than those bundled within the tools.
 
-For Mac and Linux, a system wide installation of Python 2.7 is assumed, as well as the Python Imaging Library (PIL) or its backwards-compatible fork (Pillow). A system wide installation of the TEX converter ktech in [ktools
-](https://github.com/nsimplex/ktools#installation-from-source) is also assumed.
+For Mac and Linux, a system wide installation of Python 3 is assumed, as well as the Python Imaging Library (PIL) or its backwards-compatible fork (Pillow).
 
 Compilation instructions
 ============
 
-For Windows, run the src/premake4.bat script to generate a Visual Studio 2010 project in build/proj/. Then open this project in Visual Studio and build it. For MinGW, see the note below.
+> The build is broken for Windows and Mac unless you change `local ZAPPS = true`
+> to `local ZAPPS = false` in `src/premake5.bat`. This variable controls whether
+> the build output runs regardless of which distro it is running on, but it is
+> not compatible with non-Linux operating systems.
+>
+> You need to compile the dependencies in `src/external/freeimage` &
+> `src/external/squish` before you compile mod_tools.
+> For Mac and Linux Running `make` inside the corresponding directories will do.
+> I'm not sure about Windows.
+>
+> Proprietary texture codecs supported by Klei (Qualcomm' Adreno ATC &
+> Imagination Technologies' PVRTC) are disabled by default because they require
+> their corresponding SDKs. These codecs are not used by default (DXT is used
+> instead).
+
+For Windows, run the src/premake5.bat script to generate a Visual Studio 2010 project in build/proj/. Then open this project in Visual Studio and build it. For MinGW, see the note below.
 
 For Mac and Linux, enter `src/` and run `premake.sh`, then enter the directory `build/proj` with a terminal and enter the command
 ```
@@ -37,9 +54,9 @@ $ make
 
 The output is built to `build/win32`, `build/osx` or `build/linux`.
 
-To customize the build files placed in build/proj, instead of running src/premake.bat or src/premake.sh the premake4 program may be run directly from a terminal (cmd.exe, under Windows). For the full list of options, run `premake4 --help`, but the most significant scenario is generating GNU make files for compilation using MinGW, under Windows. This can be done via a
+To customize the build files placed in build/proj, instead of running src/premake.bat or src/premake.sh the premake5 program may be run directly from a terminal (cmd.exe, under Windows). For the full list of options, run `premake5 --help`, but the most significant scenario is generating GNU make files for compilation using MinGW, under Windows. This can be done via a
 ```
-premake4 gmake
+premake5 gmake
 ```
 
 Usage
